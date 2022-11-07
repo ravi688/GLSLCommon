@@ -11,9 +11,9 @@
 #-------------------------------------------
 #		Project Configuration
 #-------------------------------------------
-PROJECT_NAME = TemplateRepo
-STATIC_LIB_NAME = templaterepo.a
-DYNAMIC_LIB_NAME = templaterepo.dll
+PROJECT_NAME = GLSLCommon
+STATIC_LIB_NAME = glslcommon.a
+DYNAMIC_LIB_NAME = glslcommon.dll
 EXECUTABLE_NAME = main
 EXTERNAL_INCLUDES = 
 EXTERNAL_LIBS = 
@@ -183,6 +183,7 @@ debug: $(TARGET)
 
 
 %.o : %.c
+	@echo [Log] Compiling $< to $@
 	$(COMPILER) $(COMPILER_FLAGS) $(DEFINES) $(INCLUDES) -c $< -o $@
 
 %.a:

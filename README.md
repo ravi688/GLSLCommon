@@ -1,2 +1,2 @@
-# TemplateRepository
-This repository contains template for a project in C language
+# GLSLCommon
+GLSLCommon is a library containing common defines and logic across V3D shader compiler and V3D renderer.
