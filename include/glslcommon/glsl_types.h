@@ -1,3 +1,4 @@
+#pragma once
 
 #include <glslcommon/defines.h>
 
