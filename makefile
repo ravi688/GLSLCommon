@@ -18,8 +18,8 @@ EXECUTABLE_NAME = main
 EXTERNAL_INCLUDES = 
 EXTERNAL_LIBS = 
 
-DEPENDENCIES = #CallTrace
-DEPENDENCY_LIBS = #CallTrace/lib/calltrace.a
+DEPENDENCIES = Common
+DEPENDENCY_LIBS = Common/lib/common.a
 DEPENDENCIES_DIR = ./dependencies
 SHARED_DEPENDENCIES = 
 SHARED_DEPENDENCY_LIBS = 
@@ -43,7 +43,7 @@ endif
 all: dgraph release
 
 %.gv:
-	echo digraph $(PROJECT_NAME) { $(PROJECT_NAME); } > $@
+	echo "digraph $(PROJECT_NAME) { $(PROJECT_NAME); }" > $@
 	@echo [Log] $@ created successfully!
 
 $(DEPENDENCIES_DIR) $(SHARED_DEPENDENCIES_DIR): 
@@ -231,6 +231,7 @@ bin-clean:
 	$(RM) $(TARGET_DYNAMIC_IMPORT_LIB)
 	$(RM_DIR) $(TARGET_LIB_DIR)
 	@echo [Log] Binaries cleaned successfully!
+	$(MAKE) --directory=./dependencies/Common clean
 # 	$(MAKE) --directory=./dependencies/CallTrace clean
 # 	$(MAKE) --directory=./shared-dependencies/CallTrace clean
 # 	$(MAKE) --directory=./dependencies/HPML clean
