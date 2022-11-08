@@ -74,6 +74,6 @@ typedef int64_t s64;
 #define CAST_TO(to, s) ((to)(s))
 #define REINTERPRET_TO(to, s) (*(to*)(&s))
 
-#define OUT * const
+#define OUT *
 #define IN const *
 
