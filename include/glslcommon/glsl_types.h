@@ -54,31 +54,132 @@ GLSL_COM_API u32 sizeof_glsl_type(glsl_type_t type);
 /* returns VkFormat (u32) of a glsl type 'type' */
 GLSL_COM_API u32 vkformatof_glsl_type(glsl_type_t type);
 
-#define GLSL_TYPE_U8_SIZE 		sizeof_glsl_type(GLSL_TYPE_U8)
-#define GLSL_TYPE_U16_SIZE 		sizeof_glsl_type(GLSL_TYPE_U16)
-#define GLSL_TYPE_U32_SIZE 		sizeof_glsl_type(GLSL_TYPE_U32)
-#define GLSL_TYPE_U64_SIZE 		sizeof_glsl_type(GLSL_TYPE_U64)
-#define GLSL_TYPE_S8_SIZE 		sizeof_glsl_type(GLSL_TYPE_S8)
-#define GLSL_TYPE_S16_SIZE 		sizeof_glsl_type(GLSL_TYPE_S16)
-#define GLSL_TYPE_S32_SIZE 		sizeof_glsl_type(GLSL_TYPE_S32)
-#define GLSL_TYPE_S64_SIZE 		sizeof_glsl_type(GLSL_TYPE_S64)
-#define GLSL_TYPE_F32_SIZE 		sizeof_glsl_type(GLSL_TYPE_F32)
-#define GLSL_TYPE_F64_SIZE		sizeof_glsl_type(GLSL_TYPE_F64)
-#define GLSL_TYPE_VEC2_SIZE		sizeof_glsl_type(GLSL_TYPE_VEC2)
-#define GLSL_TYPE_VEC3_SIZE		sizeof_glsl_type(GLSL_TYPE_VEC3)
-#define GLSL_TYPE_VEC4_SIZE		sizeof_glsl_type(GLSL_TYPE_VEC4)
-#define GLSL_TYPE_MAT2_SIZE		sizeof_glsl_type(GLSL_TYPE_MAT2)
-#define GLSL_TYPE_MAT3_SIZE		sizeof_glsl_type(GLSL_TYPE_MAT3)
-#define GLSL_TYPE_MAT4_SIZE		sizeof_glsl_type(GLSL_TYPE_MAT4)
-#define GLSL_TYPE_IVEC2_SIZE	sizeof_glsl_type(GLSL_TYPE_IVEC2)
-#define GLSL_TYPE_IVEC3_SIZE	sizeof_glsl_type(GLSL_TYPE_IVEC3)
-#define GLSL_TYPE_IVEC4_SIZE	sizeof_glsl_type(GLSL_TYPE_IVEC4)
-#define GLSL_TYPE_UVEC2_SIZE	sizeof_glsl_type(GLSL_TYPE_UVEC2)
-#define GLSL_TYPE_UVEC3_SIZE	sizeof_glsl_type(GLSL_TYPE_UVEC3)
-#define GLSL_TYPE_UVEC4_SIZE	sizeof_glsl_type(GLSL_TYPE_UVEC4)
-#define GLSL_TYPE_BLOCK_SIZE	sizeof_glsl_type(GLSL_TYPE_BLOCK)
+/* force syntax error */
+#define FORCE_ERROR(description) (yield @ error description)
 
-#define GLSL_TYPE_FLOAT_SIZE GLSL_TYPE_F32_SIZE
-#define GLSL_TYPE_INT_SIZE GLSL_TYPE_S32_SIZE
-#define GLSL_TYPE_UINT_SIZE GLSL_TYPE_U32_SIZE
-#define GLSL_TYPE_DOUBLE_SIZE GLSL_TYPE_F64_SIZE
+#define GLSL_TYPE_BLOCK_ALIGN 			FORCE_ERROR("align is not defined for BLOCK")
+#define GLSL_TYPE_FLOAT_ALIGN 			4
+#define GLSL_TYPE_INT_ALIGN 			4
+#define GLSL_TYPE_UINT_ALIGN			4
+#define GLSL_TYPE_DOUBLE_ALIGN 			FORCE_ERROR("double is not supported yet")
+#define GLSL_TYPE_VEC4_ALIGN 			16
+#define GLSL_TYPE_IVEC4_ALIGN 			16
+#define GLSL_TYPE_UVEC4_ALIGN 			16
+#define GLSL_TYPE_IVEC3_ALIGN 			16
+#define GLSL_TYPE_UVEC3_ALIGN 			16
+#define GLSL_TYPE_VEC3_ALIGN 			16
+#define GLSL_TYPE_MAT4_ALIGN 			16
+#define GLSL_TYPE_MAT3_ALIGN 			16
+#define GLSL_TYPE_IVEC2_ALIGN 			8
+#define GLSL_TYPE_UVEC2_ALIGN 			8
+#define GLSL_TYPE_VEC2_ALIGN 			8
+#define GLSL_TYPE_MAT2_ALIGN 			8
+#define GLSL_TYPE_SAMPLER_2D_ALIGN 		FORCE_ERROR("size is not defined for Opaque types")
+#define GLSL_TYPE_SAMPLER_3D_ALIGN 		FORCE_ERROR("size is not defined for Opaque types")
+#define GLSL_TYPE_SAMPLER_CUBE_ALIGN 	FORCE_ERROR("size is not defined for Opaque types")
+
+#define GLSL_TYPE_BLOCK_SIZE  			FORCE_ERROR("size is not defined for BLOCK")
+#define GLSL_TYPE_FLOAT_SIZE			4
+#define GLSL_TYPE_INT_SIZE 				4
+#define GLSL_TYPE_UINT_SIZE				4
+#define GLSL_TYPE_DOUBLE_SIZE 			FORCE_ERROR("double is not supported yet")
+#define GLSL_TYPE_VEC4_SIZE 			16
+#define GLSL_TYPE_IVEC4_SIZE 			16
+#define GLSL_TYPE_UVEC4_SIZE 			16
+#define GLSL_TYPE_MAT2_SIZE  			16
+#define GLSL_TYPE_IVEC3_SIZE 			12
+#define GLSL_TYPE_UVEC3_SIZE 			12
+#define GLSL_TYPE_VEC3_SIZE 			12
+#define GLSL_TYPE_IVEC2_SIZE 			8
+#define GLSL_TYPE_UVEC2_SIZE 			8
+#define GLSL_TYPE_VEC2_SIZE 			8
+#define GLSL_TYPE_MAT4_SIZE 			64
+#define GLSL_TYPE_MAT3_SIZE 			36
+#define GLSL_TYPE_SAMPLER_2D_SIZE 		FORCE_ERROR("size is not defined for Opque types")
+#define GLSL_TYPE_SAMPLER_3D_SIZE		FORCE_ERROR("size is not defined for Opque types")
+#define GLSL_TYPE_SAMPLER_CUBE_SIZE		FORCE_ERROR("size is not defined for Opque types")
+
+typedef f32 glsl_float_t ALIGN_AS(GLSL_TYPE_FLOAT_ALIGN);
+typedef s32 glsl_int_t ALIGN_AS(GLSL_TYPE_INT_ALIGN);
+typedef u32 glsl_uint_t ALIGN_AS(GLSL_TYPE_UINT_ALIGN);
+typedef struct glsl_vec4_t { glsl_float_t x, y, z, w; } glsl_vec4_t ALIGN_AS(GLSL_TYPE_VEC4_ALIGN);
+typedef struct glsl_vec3_t { glsl_float_t x, y, z; } glsl_vec3_t ALIGN_AS(GLSL_TYPE_VEC3_ALIGN);
+typedef struct glsl_vec2_t { glsl_float_t x, y; } glsl_vec2_t ALIGN_AS(GLSL_TYPE_VEC2_ALIGN);
+typedef struct glsl_ivec4_t { glsl_int_t x, y, z, w; } glsl_ivec4_t ALIGN_AS(GLSL_TYPE_IVEC4_ALIGN);
+typedef struct glsl_ivec3_t { glsl_int_t x, y, z; } glsl_ivec3_t ALIGN_AS(GLSL_TYPE_IVEC3_ALIGN);
+typedef struct glsl_ivec2_t { glsl_int_t x, y; } glsl_ivec2_t ALIGN_AS(GLSL_TYPE_IVEC2_ALIGN);
+typedef struct glsl_uvec4_t { glsl_uint_t x, y, z, w; } glsl_uvec4_t ALIGN_AS(GLSL_TYPE_UVEC4_ALIGN);
+typedef struct glsl_uvec3_t { glsl_uint_t x, y, z; } glsl_uvec3_t ALIGN_AS(GLSL_TYPE_UVEC3_ALIGN);
+typedef struct glsl_uvec2_t { glsl_uint_t x, y; } glsl_uvec2_t ALIGN_AS(GLSL_TYPE_UVEC2_ALIGN);
+typedef union glsl_mat4_t
+{
+	struct { glsl_vec4_t r0, r1, r2, r3; };
+	struct
+	{
+		glsl_float_t m00, m01, m02, m03,
+					 m10, m11, m12, m13,
+					 m20, m21, m22, m23,
+					 m30, m31, m32, m33;
+	};
+} glsl_mat4_t ALIGN_AS(GLSL_TYPE_MAT4_ALIGN);
+typedef union glsl_mat3_t
+{
+	struct { glsl_vec3_t r0, r1, r2; };
+	struct
+	{
+		glsl_float_t m00, m01, m02,
+					 m10, m11, m12,
+					 m20, m21, m22;
+	};
+} glsl_mat3_t ALIGN_AS(GLSL_TYPE_MAT3_ALIGN);
+typedef union glsl_mat2_t
+{
+	struct { glsl_float_t r0, r1; };
+	struct { glsl_float_t m00, m01, m10, m11; };
+} glsl_mat2_t ALIGN_AS(GLSL_TYPE_MAT2_ALIGN);
+
+#define __glsl_sizeof_glsl_block_t 			GLSL_TYPE_BLOCK_SIZE
+#define __glsl_sizeof_glsl_float_t 			GLSL_TYPE_FLOAT_SIZE
+#define __glsl_sizeof_glsl_int_t 			GLSL_TYPE_INT_SIZE
+#define __glsl_sizeof_glsl_uint_t 			GLSL_TYPE_UINT_SIZE
+#define __glsl_sizeof_glsl_double_t 		GLSL_TYPE_DOUBLE_SIZE
+#define __glsl_sizeof_glsl_vec4_t 			GLSL_TYPE_VEC4_SIZE
+#define __glsl_sizeof_glsl_ivec4_t 			GLSL_TYPE_IVEC4_SIZE
+#define __glsl_sizeof_glsl_uvec4_t 			GLSL_TYPE_UVEC4_SIZE
+#define __glsl_sizeof_glsl_mat2_t 			GLSL_TYPE_MAT2_SIZE
+#define __glsl_sizeof_glsl_ivec3_t 			GLSL_TYPE_IVEC3_SIZE
+#define __glsl_sizeof_glsl_uvec3_t 			GLSL_TYPE_UVEC3_SIZE
+#define __glsl_sizeof_glsl_vec3_t 			GLSL_TYPE_VEC3_SIZE
+#define __glsl_sizeof_glsl_ivec2_t 			GLSL_TYPE_IVEC2_SIZE
+#define __glsl_sizeof_glsl_uvec2_t 			GLSL_TYPE_UVEC2_SIZE
+#define __glsl_sizeof_glsl_vec2_t 			GLSL_TYPE_VEC2_SIZE
+#define __glsl_sizeof_glsl_mat4_t 			GLSL_TYPE_MAT4_SIZE
+#define __glsl_sizeof_glsl_mat3_t 			GLSL_TYPE_MAT3_SIZE
+#define __glsl_sizeof_glsl_sampler_2d_t 	GLSL_TYPE_SAMPLER_2D_SIZE
+#define __glsl_sizeof_glsl_sampler_3d_t 	GLSL_TYPE_SAMPLER_3D_SIZE
+#define __glsl_sizeof_glsl_sampler_cube_t 	GLSL_TYPE_SAMPLER_CUBE_SIZE
+
+#define glsl_sizeof(glsl_type) __glsl_sizeof_##glsl_type
+
+#define __glsl_alignof_glsl_block_t 		GLSL_TYPE_BLOCK_ALIGN
+#define __glsl_alignof_glsl_float_t 		GLSL_TYPE_FLOAT_ALIGN
+#define __glsl_alignof_glsl_int_t 			GLSL_TYPE_INT_ALIGN
+#define __glsl_alignof_glsl_uint_t 			GLSL_TYPE_UINT_ALIGN
+#define __glsl_alignof_glsl_double_t 		GLSL_TYPE_DOUBLE_ALIGN
+#define __glsl_alignof_glsl_vec4_t 			GLSL_TYPE_VEC4_ALIGN
+#define __glsl_alignof_glsl_ivec4_t 		GLSL_TYPE_IVEC4_ALIGN
+#define __glsl_alignof_glsl_uvec4_t 		GLSL_TYPE_UVEC4_ALIGN
+#define __glsl_alignof_glsl_mat2_t 			GLSL_TYPE_MAT2_ALIGN
+#define __glsl_alignof_glsl_ivec3_t 		GLSL_TYPE_IVEC3_ALIGN
+#define __glsl_alignof_glsl_uvec3_t 		GLSL_TYPE_UVEC3_ALIGN
+#define __glsl_alignof_glsl_vec3_t 			GLSL_TYPE_VEC3_ALIGN
+#define __glsl_alignof_glsl_ivec2_t 		GLSL_TYPE_IVEC2_ALIGN
+#define __glsl_alignof_glsl_uvec2_t 		GLSL_TYPE_UVEC2_ALIGN
+#define __glsl_alignof_glsl_vec2_t 			GLSL_TYPE_VEC2_ALIGN
+#define __glsl_alignof_glsl_mat4_t 			GLSL_TYPE_MAT4_ALIGN
+#define __glsl_alignof_glsl_mat3_t 			GLSL_TYPE_MAT3_ALIGN
+#define __glsl_alignof_glsl_sampler_2d_t 	GLSL_TYPE_SAMPLER_2D_ALIGN
+#define __glsl_alignof_glsl_sampler_3d_t 	GLSL_TYPE_SAMPLER_3D_ALIGN
+#define __glsl_alignof_glsl_sampler_cube_t 	GLSL_TYPE_SAMPLER_CUBE_ALIGN
+
+#define glsl_alignof(glsl_type) __glsl_alignof_##glsl_type
