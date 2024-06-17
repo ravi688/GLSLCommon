@@ -1,77 +1,257 @@
 #include <glslcommon/glsl_types.h>
 #include <glslcommon/debug.h>
+#include <glslcommon/assert.h> /* _ASSERT */
 
-/*
-	From the spec:
+/* Scalar Alignment:
+The scalar alignment of the type of an OpTypeStruct member is defined recursively as follows:
 
-	Standard Uniform Buffer Layout
+A scalar of size N has a scalar alignment of N.
 
-	The 'base alignment' of the type of an OpTypeStruct member of is defined recursively as follows:
+A vector type has a scalar alignment equal to that of its component type.
 
-	A scalar of size N has a base alignment of N.
-	A two-component vector, with components of size N, has a base alignment of 2 N.
-	A three- or four-component vector, with components of size N, has a base alignment of 4 N.
-	An array has a base alignment equal to the base alignment of its element type, rounded up to a multiple of 16.
-	A structure has a base alignment equal to the largest base alignment of any of its members, rounded up to a multiple of 16.
-	A row-major matrix of C columns has a base alignment equal to the base alignment of a vector of C matrix components.
-	A column-major matrix has a base alignment equal to the base alignment of the matrix column type.
-	The std140 layout in GLSL satisfies these rules.
+An array type has a scalar alignment equal to that of its element type.
 
+A structure has a scalar alignment equal to the largest scalar alignment of any of its members.
+
+A matrix type inherits scalar alignment from the equivalent array declaration.
  */
-GLSL_COM_API u32 alignof_glsl_type(glsl_type_t type)
+static u32 alignof_glsl_type_scalar(glsl_type_t type, bool is_array)
 {
-	switch(type)
-	{
-		case GLSL_TYPE_BLOCK 			: debug_log_error("getting alignment of non glsl type \"GLSL_TYPE_BLOCK\" is a invalid operation\n"); return 0;
-		case GLSL_TYPE_FLOAT 			:
-		case GLSL_TYPE_INT 				:
-		case GLSL_TYPE_UINT 			: return 4;
-		case GLSL_TYPE_DOUBLE 			: debug_log_error("\"double\" isn't supported yet\n"); return 0;
-		case GLSL_TYPE_VEC4 			:
-		case GLSL_TYPE_IVEC4 			:
-		case GLSL_TYPE_UVEC4 			:
-		case GLSL_TYPE_IVEC3 			:
-		case GLSL_TYPE_UVEC3 			:
-		case GLSL_TYPE_VEC3 			:
-		case GLSL_TYPE_MAT4 			:
-		case GLSL_TYPE_MAT3 			: return 16;
-		case GLSL_TYPE_IVEC2 			:
-		case GLSL_TYPE_UVEC2 			:
-		case GLSL_TYPE_VEC2 			:
-		case GLSL_TYPE_MAT2 			: return 8;
-		case GLSL_TYPE_SAMPLER_2D 		:
-		case GLSL_TYPE_SAMPLER_3D		: 
-		case GLSL_TYPE_SAMPLER_CUBE		: debug_log_error("getting alignment of opaque types are invalid operation\n"); return 0;
-		default							: debug_log_error("Unrecognized glsl type \"%u\"\n", type); return 0;
-	};
+    switch(type)
+    {
+        case GLSL_TYPE_FLOAT            : /* IEEE 745 double precision float has 32 bits */
+        case GLSL_TYPE_INT              : /* GLSL spec states 32-bits for int */
+        case GLSL_TYPE_UINT             : return 4; /* GLSL spec states 32-bits for uint */
+        case GLSL_TYPE_DOUBLE           : return 8; /* IEEE 745 double precision float has 64 bits */
+        case GLSL_TYPE_IVEC4            :
+        case GLSL_TYPE_UVEC4            :
+        case GLSL_TYPE_IVEC3            :
+        case GLSL_TYPE_UVEC3            :
+        case GLSL_TYPE_IVEC2            :
+        case GLSL_TYPE_UVEC2            :
+        case GLSL_TYPE_VEC2             :
+        case GLSL_TYPE_VEC3             :
+        case GLSL_TYPE_VEC4             : return 4; /* Scalar Alignment: A vector type has a scalar alignment equal to that of its component type. */
+        case GLSL_TYPE_DVEC2            :
+        case GLSL_TYPE_DVEC3            :
+        case GLSL_TYPE_DVEC4            : return 8; /* Scalar Alignment: A vector type has a scalar alignment equal to that of its component type. */
+        case GLSL_TYPE_MAT2             :
+        case GLSL_TYPE_MAT3             :
+        case GLSL_TYPE_MAT4             : return 4; /* Recursively MAT2 --> array of VEC2, MAT3 --> array of VEC3, MAT4 --> array of VEC4 */
+        case GLSL_TYPE_DMAT2            :
+        case GLSL_TYPE_DMAT3            :
+        case GLSL_TYPE_DMAT4            : return 8; /* Recursively DMAT2 --> array of DVEC2, DMAT3 --> array of DVEC3, DMAT4 --> array of DVEC4 */
+        default                         : debug_log_fetal_error("alignment is not defined for glsl type \"%u\"\n", type);
+    };
+    return 0;
 }
 
-GLSL_COM_API u32 sizeof_glsl_type(glsl_type_t type)
+/*  Base Alignment:
+The base alignment of the type of an OpTypeStruct member is defined recursively as follows:
+
+A scalar has a base alignment equal to its scalar alignment.
+
+A two-component vector has a base alignment equal to twice its scalar alignment.
+
+A three- or four-component vector has a base alignment equal to four times its scalar alignment.
+
+An array has a base alignment equal to the base alignment of its element type.
+
+A structure has a base alignment equal to the largest base alignment of any of its members. An empty structure has a base alignment equal to the size of the smallest scalar type permitted by the capabilities declared in the SPIR-V module. (e.g., for a 1 byte aligned empty struct in the StorageBuffer storage class, StorageBuffer8BitAccess or UniformAndStorageBuffer8BitAccess must be declared in the SPIR-V module.)
+
+A matrix type inherits base alignment from the equivalent array declaration.
+*/
+static u32 alignof_glsl_type_base(glsl_type_t type, bool is_array)
+{
+    switch(type)
+    {
+        case GLSL_TYPE_FLOAT            : /* IEEE 745 double precision float has 32 bits */
+        case GLSL_TYPE_INT              : /* GLSL spec states 32-bits for int */
+        case GLSL_TYPE_UINT             : return 4; /* GLSL spec states 32-bits for uint */
+        case GLSL_TYPE_DOUBLE           : return 8; /* IEEE 745 double precision float has 64 bits */
+        case GLSL_TYPE_IVEC2            :
+        case GLSL_TYPE_UVEC2            :
+        case GLSL_TYPE_VEC2             : return 8; /* Base Alignment: A two-component vector has a base alignment equal to twice its scalar alignment. */
+        case GLSL_TYPE_DVEC2            : return 16; /* Base Alignment: A two-component vector has a base alignment equal to twice its scalar alignment. */
+        case GLSL_TYPE_IVEC4            :
+        case GLSL_TYPE_UVEC4            :
+        case GLSL_TYPE_IVEC3            :
+        case GLSL_TYPE_UVEC3            :
+        case GLSL_TYPE_VEC3             :
+        case GLSL_TYPE_VEC4             : return 16; /* Base Alignment: A three- or four-component vector has a base alignment equal to four times its scalar alignment. */
+        case GLSL_TYPE_DVEC3            :
+        case GLSL_TYPE_DVEC4            : return 32; /* Base Alignment: A three- or four-component vector has a base alignment equal to four times its scalar alignment. */
+        case GLSL_TYPE_MAT2             : return 8; /* MAT2 --> array of VEC2 */
+        case GLSL_TYPE_MAT3             :
+        case GLSL_TYPE_MAT4             : return 16; /* Base Alignment: A matrix type inherits base alignment from the equivalent array declaration. */
+        case GLSL_TYPE_DMAT2            : return 16; /* Recursively DMAT2 --> array of DVEC2 */
+        case GLSL_TYPE_DMAT3            :
+        case GLSL_TYPE_DMAT4            : return 32; /* BaseAlignment: MAT3 --> array of VEC3, MAT4 --> array of VEC4 */
+        default                         : debug_log_fetal_error("alignment is not defined for glsl type \"%u\"\n", type);
+    };
+    return 0;
+}
+
+/* Extended Alignment:
+The extended alignment of the type of an OpTypeStruct member is similarly defined as follows:
+
+A scalar or vector type has an extended alignment equal to its base alignment.
+
+An array or structure type has an extended alignment equal to the largest extended alignment of any of its members, rounded up to a multiple of 16.
+
+A matrix type inherits extended alignment from the equivalent array declaration.
+*/
+static u32 alignof_glsl_type_extended(glsl_type_t type, bool is_array)
+{
+    switch(type)
+    {
+        case GLSL_TYPE_FLOAT            : /* IEEE 745 double precision float has 32 bits */
+        case GLSL_TYPE_INT              : /* GLSL spec states 32-bits for int */
+        case GLSL_TYPE_UINT             : return is_array ? 16 : 4; /* GLSL spec states 32-bits for uint */
+        case GLSL_TYPE_DOUBLE           : return is_array ? 16 : 8; /* IEEE 745 double precision float has 64 bits */
+        case GLSL_TYPE_IVEC2            :
+        case GLSL_TYPE_UVEC2            :
+        case GLSL_TYPE_VEC2             : return is_array ? 16 : 8; /* Base Alignment: A two-component vector has a base alignment equal to twice its scalar alignment. */
+        case GLSL_TYPE_DVEC2            : return 16; /* Base Alignment: A two-component vector has a base alignment equal to twice its scalar alignment. */
+        case GLSL_TYPE_IVEC4            :
+        case GLSL_TYPE_UVEC4            :
+        case GLSL_TYPE_IVEC3            :
+        case GLSL_TYPE_UVEC3            :
+        case GLSL_TYPE_VEC3             :
+        case GLSL_TYPE_VEC4             : return 16; /* Base Alignment: A three- or four-component vector has a base alignment equal to four times its scalar alignment. */
+        case GLSL_TYPE_DVEC3            :
+        case GLSL_TYPE_DVEC4            : return 32; /* Base Alignment: A three- or four-component vector has a base alignment equal to four times its scalar alignment. */
+        case GLSL_TYPE_MAT2             : return is_array ? 16 : 8; /* MAT2 --> array of VEC2 */
+        case GLSL_TYPE_MAT3             :
+        case GLSL_TYPE_MAT4             : return 16; /* Base Alignment: A matrix type inherits base alignment from the equivalent array declaration. */
+        case GLSL_TYPE_DMAT2            : return 16; /* Recursively MAT2 --> array of VEC2 */
+        case GLSL_TYPE_DMAT3            :
+        case GLSL_TYPE_DMAT4            : return 32; /* BaseAlignment: MAT3 --> array of VEC3, MAT4 --> array of VEC4 */
+        default                         : debug_log_fetal_error("alignment is not defined for glsl type \"%u\"\n", type);
+    };
+    return 0;
+}
+
+GLSL_COM_API u32 alignof_glsl_type(glsl_type_t type, glsl_memory_layout_t layout)
+{
+    switch(layout)
+    {
+        case GLSL_MEMORY_LAYOUT_SCALAR:
+        {
+            return alignof_glsl_type_scalar(type, false);
+        }
+        case GLSL_MEMORY_LAYOUT_BASE:
+        {
+            return alignof_glsl_type_base(type, false);
+        }
+        case GLSL_MEMORY_LAYOUT_EXTENDED:
+        {
+            return alignof_glsl_type_extended(type, false);
+        }
+        default:
+        {
+            debug_log_fetal_error("[GLSLCommon] Invalid glsl_memory_layout_t is provided");
+            return 0;
+        }
+    }
+}
+
+GLSL_COM_API u32 alignof_glsl_type_array(glsl_type_t type, glsl_memory_layout_t layout)
+{
+    switch(layout)
+    {
+        case GLSL_MEMORY_LAYOUT_SCALAR:
+        {
+            return alignof_glsl_type_scalar(type, true);
+        }
+        case GLSL_MEMORY_LAYOUT_BASE:
+        {
+            return alignof_glsl_type_base(type, true);
+        }
+        case GLSL_MEMORY_LAYOUT_EXTENDED:
+        {
+            return alignof_glsl_type_extended(type, true);
+        }
+        default:
+        {
+            debug_log_fetal_error("[GLSLCommon] Invalid glsl_memory_layout_t is provided");
+            return 0;
+        }
+    }
+}
+
+static u32 get_align_from_type_traits(glsl_type_layout_traits_t type_traits, glsl_memory_layout_t layout)
+{
+    if(type_traits.type == GLSL_TYPE_UNDEFINED)
+        return type_traits.align;
+    if(type_traits.is_array)
+        return alignof_glsl_type_array(type_traits.type, layout);
+    return alignof_glsl_type(type_traits.type, layout);
+}
+
+GLSL_COM_API u32 alignof_glsl_type_struct(glsl_type_layout_traits_callback_t callback, void* user_data, u32 type_traits_count, glsl_memory_layout_t layout)
+{
+    _ASSERT(type_traits_count > 0);
+
+    u32 max_align = 0;
+    for(u32 i = 0; i < type_traits_count; i++)
+    {
+        AUTO type_traits = callback(user_data, i);
+        AUTO align = get_align_from_type_traits(type_traits, layout);
+        if(max_align < align)
+            max_align = align;
+    }
+    switch(layout)
+    {
+        case GLSL_MEMORY_LAYOUT_SCALAR:
+        {
+            return max_align;
+        }
+        case GLSL_MEMORY_LAYOUT_BASE:
+        {
+            return max_align;
+        }
+        case GLSL_MEMORY_LAYOUT_EXTENDED:
+        {
+            return u32_round_next_multiple(max_align, 16);
+        }
+        default:
+        {
+            debug_log_fetal_error("[GLSLCommon] Invalid glsl_memory_layout_t is provided");
+            return max_align;
+        }
+    }
+}
+
+GLSL_COM_API u32 sizeof_glsl_type(glsl_type_t type, glsl_memory_layout_t layout)
 {
 	switch(type)
 	{
-		case GLSL_TYPE_BLOCK 			: debug_log_error("getting size of non glsl type \"GLSL_TYPE_BLOCK\" is a invalid operation\n"); return 0;
-		case GLSL_TYPE_FLOAT 			:
-		case GLSL_TYPE_INT 				:
-		case GLSL_TYPE_UINT 			: return 4;
-		case GLSL_TYPE_DOUBLE 			: debug_log_error("\"double\" isn't supported yet\n"); return 0;
-		case GLSL_TYPE_VEC4 			:
-		case GLSL_TYPE_IVEC4 			:
-		case GLSL_TYPE_UVEC4 			:
-		case GLSL_TYPE_MAT2 			: return 16;
-		case GLSL_TYPE_IVEC3 			:
-		case GLSL_TYPE_UVEC3 			:
-		case GLSL_TYPE_VEC3 			: return 12;
-		case GLSL_TYPE_IVEC2 			:
-		case GLSL_TYPE_UVEC2 			:
-		case GLSL_TYPE_VEC2 			: return 8;
-		case GLSL_TYPE_MAT4 			: return 64;
-		case GLSL_TYPE_MAT3 			: return 36;
-		case GLSL_TYPE_SAMPLER_2D 		:
-		case GLSL_TYPE_SAMPLER_3D		: 
-		case GLSL_TYPE_SAMPLER_CUBE		: debug_log_error("getting size of opaque types are invalid operation\n"); return 0;
-		default							: debug_log_error("Unrecognized glsl type \"%u\"\n", type); return 0;
+        case GLSL_TYPE_FLOAT            : /* IEEE 745 double precision float has 32 bits */
+        case GLSL_TYPE_INT              : /* GLSL spec states 32-bits for int */
+        case GLSL_TYPE_UINT             : return 4; /* GLSL spec states 32-bits for uint */
+        case GLSL_TYPE_DOUBLE           : return 8; /* IEEE 745 double precision float has 64 bits */
+        case GLSL_TYPE_IVEC2            :
+        case GLSL_TYPE_UVEC2            :
+        case GLSL_TYPE_VEC2             : return 8;
+        case GLSL_TYPE_DVEC2            : return 16;
+        case GLSL_TYPE_IVEC4            :
+        case GLSL_TYPE_UVEC4            :
+        case GLSL_TYPE_VEC4             : return 16;
+        case GLSL_TYPE_IVEC3            :
+        case GLSL_TYPE_UVEC3            :
+        case GLSL_TYPE_VEC3             : return 12;
+        case GLSL_TYPE_DVEC3            : return 24;
+        case GLSL_TYPE_DVEC4            : return 32;
+        case GLSL_TYPE_MAT2             : return 16;
+        case GLSL_TYPE_MAT3             : return 36;
+        case GLSL_TYPE_MAT4             : return 64;
+        case GLSL_TYPE_DMAT2            : return 32;
+        case GLSL_TYPE_DMAT3            : return 72;
+        case GLSL_TYPE_DMAT4            : return 128;
+        default                         : debug_log_fetal_error("size is not defined for glsl type \"%u\"\n", type);
 	};
+    return 0;
 }
 
 /* copied from vulkan_core.h*/

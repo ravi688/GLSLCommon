@@ -2,6 +2,16 @@
 
 #include <glslcommon/defines.h>
 
+typedef enum glsl_memory_layout_t
+{
+	GLSL_SCALAR,
+	GLSL_MEMORY_LAYOUT_SCALAR = GLSL_SCALAR,
+	GLSL_STD430,
+	GLSL_MEMORY_LAYOUT_BASE = GLSL_STD430,
+	GLSL_STD140,
+	GLSL_MEMORY_LAYOUT_EXTENDED = GLSL_STD140
+} glsl_memory_layout_t;
+
 typedef enum glsl_type_t
 {
 	GLSL_TYPE_UNDEFINED = 0ULL,
@@ -53,10 +63,27 @@ typedef enum glsl_type_t
 	GLSL_TYPE_DOUBLE = GLSL_TYPE_F64
 } glsl_type_t;
 
+typedef struct glsl_type_layout_traits_t
+{
+	/* if this is GLSL_TYPE_UNDEFINED (meaning maybe it is a struct type), then align and size must be set correctly to specify its layout information */
+	glsl_type_t type;
+	/* true if this type is an array, otherwise false */
+	bool is_array;
+	/* alignment of GLSL_TYPE_UNDEFINED type */
+	u32 align;
+	/* size of GLSL_TYPE_UNDEFINED type */
+	u32 size;
+} glsl_type_layout_traits_t;
+
 /* returns alignment (in bytes) of a glsl type 'type' */
-GLSL_COM_API u32 alignof_glsl_type(glsl_type_t type);
+GLSL_COM_API u32 alignof_glsl_type(glsl_type_t type, glsl_memory_layout_t layout);
+GLSL_COM_API u32 alignof_glsl_type_array(glsl_type_t type, glsl_memory_layout_t layout);
+typedef glsl_type_layout_traits_t (*glsl_type_layout_traits_callback_t)(void* user_data, u32 type_index);
+GLSL_COM_API u32 alignof_glsl_type_struct(glsl_type_layout_traits_callback_t callback, void* user_data, u32 type_traits_count, glsl_memory_layout_t layout);
+#define alignof_glsl_type_struct_array alignof_glsl_type_struct
+
 /* returns size (in bytes) of a glsl type 'type' */
-GLSL_COM_API u32 sizeof_glsl_type(glsl_type_t type);
+GLSL_COM_API u32 sizeof_glsl_type(glsl_type_t type, glsl_memory_layout_t layout);
 /* returns VkFormat (u32) of a glsl type 'type' */
 GLSL_COM_API u32 vkformatof_glsl_type(glsl_type_t type);
 
