@@ -87,132 +87,141 @@ GLSL_COM_API u32 sizeof_glsl_type(glsl_type_t type, glsl_memory_layout_t layout)
 /* returns VkFormat (u32) of a glsl type 'type' */
 GLSL_COM_API u32 vkformatof_glsl_type(glsl_type_t type);
 
-/* force syntax error */
-#define FORCE_ERROR(description) (yield @ error description)
+/* Scalary Layout */
+#define GLSL_SCALAR_FLOAT_ALIGN            	4 /* IEEE 745 double precision float has 32 bits */
+#define GLSL_SCALAR_FLOAT_ARR_ALIGN			GLSL_SCALAR_FLOAT_ALIGN /* IEEE 745 double precision float has 32 bits */
+#define GLSL_SCALAR_INT_ALIGN              	4 /* GLSL spec states 32-bits for int */
+#define GLSL_SCALAR_INT_ARR_ALIGN 			GLSL_SCALAR_INT_ALIGN /* GLSL spec states 32-bits for int */
+#define GLSL_SCALAR_UINT_ALIGN             	4 /* GLSL spec states 32-bits for uint */
+#define GLSL_SCALAR_UINT_ARR_ALIGN 			GLSL_SCALAR_UINT_ALIGN /* GLSL spec states 32-bits for uint */
+#define GLSL_SCALAR_DOUBLE_ALIGN           	8 /* IEEE 745 double precision float has 64 bits */
+#define GLSL_SCALAR_DOUBLE_ARR_ALIGN 		GLSL_SCALAR_DOUBLE_ALIGN /* IEEE 745 double precision float has 64 bits */
+#define GLSL_SCALAR_IVEC4_ALIGN            	GLSL_SCALAR_INT_ALIGN
+#define GLSL_SCALAR_IVEC4_ARR_ALIGN 		GLSL_SCALAR_IVEC4_ALIGN
+#define GLSL_SCALAR_UVEC4_ALIGN            	GLSL_SCALAR_UINT_ALIGN
+#define GLSL_SCALAR_UVEC4_ARR_ALIGN 		GLSL_SCALAR_UVEC4_ALIGN
+#define GLSL_SCALAR_IVEC3_ALIGN            	GLSL_SCALAR_INT_ALIGN
+#define GLSL_SCALAR_IVEC3_ARR_ALIGN       	GLSL_SCALAR_IVEC3_ALIGN
+#define GLSL_SCALAR_UVEC3_ALIGN            	GLSL_SCALAR_UINT_ALIGN
+#define GLSL_SCALAR_UVEC3_ARR_ALIGN        	GLSL_SCALAR_UVEC3_ALIGN
+#define GLSL_SCALAR_IVEC2_ALIGN            	GLSL_SCALAR_INT_ALIGN
+#define GLSL_SCALAR_IVEC2_ARR_ALIGN        	GLSL_SCALAR_IVEC2_ALIGN
+#define GLSL_SCALAR_UVEC2_ALIGN            	GLSL_SCALAR_UINT_ALIGN
+#define GLSL_SCALAR_UVEC2_ARR_ALIGN        	GLSL_SCALAR_UVEC2_ALIGN
+#define GLSL_SCALAR_VEC2_ALIGN           	GLSL_SCALAR_FLOAT_ALIGN
+#define GLSL_SCALAR_VEC2_ARR_ALIGN         	GLSL_SCALAR_VEC2_ALIGN
+#define GLSL_SCALAR_VEC3_ALIGN             	GLSL_SCALAR_FLOAT_ALIGN
+#define GLSL_SCALAR_VEC3_ARR_ALIGN         	GLSL_SCALAR_VEC3_ALIGN
+#define GLSL_SCALAR_VEC4_ALIGN             	GLSL_SCALAR_FLOAT_ALIGN /* Scalar Alignment: A vector type has a scalar alignment equal to that of its component type. */
+#define GLSL_SCALAR_VEC4_ARR_ALIGN        	GLSL_SCALAR_VEC4_ALIGN /* Scalar Alignment: A vector type has a scalar alignment equal to that of its component type. */
+#define GLSL_SCALAR_DVEC2_ALIGN            	GLSL_SCALAR_DOUBLE_ALIGN
+#define GLSL_SCALAR_DVEC2_ARR_ALIGN      	GLSL_SCALAR_DVEC2_ALIGN
+#define GLSL_SCALAR_DVEC3_ALIGN            	GLSL_SCALAR_DOUBLE_ALIGN
+#define GLSL_SCALAR_DVEC3_ARR_ALIGN       	GLSL_SCALAR_DVEC3_ALIGN
+#define GLSL_SCALAR_DVEC4_ALIGN            	GLSL_SCALAR_DOUBLE_ALIGN /* Scalar Alignment: A vector type has a scalar alignment equal to that of its component type. */
+#define GLSL_SCALAR_DVEC4_ARR_ALIGN        	GLSL_SCALAR_DVEC4_ALIGN /* Scalar Alignment: A vector type has a scalar alignment equal to that of its component type. */
+#define GLSL_SCALAR_MAT2_ALIGN             	GLSL_SCALAR_VEC2_ARR_ALIGN
+#define GLSL_SCALAR_MAT2_ARR_ALIGN			GLSL_SCALAR_MAT2_ALIGN
+#define GLSL_SCALAR_MAT3_ALIGN             	GLSL_SCALAR_VEC3_ARR_ALIGN
+#define GLSL_SCALAR_MAT3_ARR_ALIGN			GLSL_SCALAR_MAT3_ALIGN
+#define GLSL_SCALAR_MAT4_ALIGN             	GLSL_SCALAR_VEC4_ARR_ALIGN /* Recursively MAT2 --> array of VEC2, MAT3 --> array of VEC3, MAT4 --> array of VEC4 */
+#define GLSL_SCALAR_MAT4_ARR_ALIGN			GLSL_SCALAR_MAT4_ALIGN
+#define GLSL_SCALAR_DMAT2_ALIGN            	GLSL_SCALAR_DVEC2_ARR_ALIGN
+#define GLSL_SCALAR_DMAT2_ARR_ALIGN			GLSL_SCALAR_DMAT2_ALIGN
+#define GLSL_SCALAR_DMAT3_ALIGN            	GLSL_SCALAR_DVEC3_ARR_ALIGN
+#define GLSL_SCALAR_DMAT3_ARR_ALIGN			GLSL_SCALAR_DMAT3_ALIGN
+#define GLSL_SCALAR_DMAT4_ALIGN            	GLSL_SCALAR_DVEC4_ARR_ALIGN /* Recursively DMAT2 --> array of DVEC2, DMAT3 --> array of DVEC3, DMAT4 --> array of DVEC4 */
+#define GLSL_SCALAR_DMAT4_ARR_ALIGN			GLSL_SCALAR_DMAT4_ALIGN
 
-#define GLSL_TYPE_BLOCK_ALIGN 			FORCE_ERROR("align is not defined for BLOCK")
-#define GLSL_TYPE_FLOAT_ALIGN 			4
-#define GLSL_TYPE_INT_ALIGN 			4
-#define GLSL_TYPE_UINT_ALIGN			4
-#define GLSL_TYPE_DOUBLE_ALIGN 			FORCE_ERROR("double is not supported yet")
-#define GLSL_TYPE_VEC4_ALIGN 			16
-#define GLSL_TYPE_IVEC4_ALIGN 			16
-#define GLSL_TYPE_UVEC4_ALIGN 			16
-#define GLSL_TYPE_IVEC3_ALIGN 			16
-#define GLSL_TYPE_UVEC3_ALIGN 			16
-#define GLSL_TYPE_VEC3_ALIGN 			16
-#define GLSL_TYPE_MAT4_ALIGN 			16
-#define GLSL_TYPE_MAT3_ALIGN 			16
-#define GLSL_TYPE_IVEC2_ALIGN 			8
-#define GLSL_TYPE_UVEC2_ALIGN 			8
-#define GLSL_TYPE_VEC2_ALIGN 			8
-#define GLSL_TYPE_MAT2_ALIGN 			8
-#define GLSL_TYPE_SAMPLER_2D_ALIGN 		FORCE_ERROR("size is not defined for Opaque types")
-#define GLSL_TYPE_SAMPLER_3D_ALIGN 		FORCE_ERROR("size is not defined for Opaque types")
-#define GLSL_TYPE_SAMPLER_CUBE_ALIGN 	FORCE_ERROR("size is not defined for Opaque types")
+/* (std430) Base Layout */
+#define GLSL_STD430_FLOAT_ALIGN            	GLSL_SCALAR_FLOAT_ALIGN /* IEEE 745 double precision float has 32 bits */
+#define GLSL_STD430_FLOAT_ARR_ALIGN			GLSL_STD430_FLOAT_ALIGN /* IEEE 745 double precision float has 32 bits */
+#define GLSL_STD430_INT_ALIGN              	GLSL_SCALAR_INT_ALIGN /* GLSL spec states 32-bits for int */
+#define GLSL_STD430_INT_ARR_ALIGN 			GLSL_STD430_INT_ALIGN /* GLSL spec states 32-bits for int */
+#define GLSL_STD430_UINT_ALIGN             	GLSL_SCALAR_UINT_ALIGN /* GLSL spec states 32-bits for uint */
+#define GLSL_STD430_UINT_ARR_ALIGN 			GLSL_STD430_UINT_ALIGN /* GLSL spec states 32-bits for uint */
+#define GLSL_STD430_DOUBLE_ALIGN           	GLSL_SCALAR_DOUBLE_ALIGN /* IEEE 745 double precision float has 64 bits */
+#define GLSL_STD430_DOUBLE_ARR_ALIGN 		GLSL_STD430_DOUBLE_ALIGN /* IEEE 745 double precision float has 64 bits */
+#define GLSL_STD430_IVEC4_ALIGN            	(4 * GLSL_STD430_INT_ALIGN)
+#define GLSL_STD430_IVEC4_ARR_ALIGN 		GLSL_STD430_IVEC4_ALIGN
+#define GLSL_STD430_UVEC4_ALIGN            	(4 * GLSL_STD430_UINT_ALIGN)
+#define GLSL_STD430_UVEC4_ARR_ALIGN 		GLSL_STD430_UVEC4_ALIGN
+#define GLSL_STD430_IVEC3_ALIGN            	(4 * GLSL_STD430_INT_ALIGN)
+#define GLSL_STD430_IVEC3_ARR_ALIGN       	GLSL_STD430_IVEC3_ALIGN
+#define GLSL_STD430_UVEC3_ALIGN            	(4 * GLSL_STD430_UINT_ALIGN)
+#define GLSL_STD430_UVEC3_ARR_ALIGN        	GLSL_STD430_UVEC3_ALIGN
+#define GLSL_STD430_IVEC2_ALIGN            	(2 * GLSL_STD430_INT_ALIGN)
+#define GLSL_STD430_IVEC2_ARR_ALIGN        	GLSL_STD430_IVEC2_ALIGN
+#define GLSL_STD430_UVEC2_ALIGN            	(2 * GLSL_STD430_UINT_ALIGN)
+#define GLSL_STD430_UVEC2_ARR_ALIGN        	GLSL_STD430_UVEC2_ALIGN
+#define GLSL_STD430_VEC2_ALIGN           	(2 * GLSL_STD430_FLOAT_ALIGN)
+#define GLSL_STD430_VEC2_ARR_ALIGN         	GLSL_STD430_VEC2_ALIGN
+#define GLSL_STD430_VEC3_ALIGN             	(4 * GLSL_STD430_FLOAT_ALIGN)
+#define GLSL_STD430_VEC3_ARR_ALIGN         	GLSL_STD430_VEC3_ALIGN
+#define GLSL_STD430_VEC4_ALIGN             	(4 * GLSL_STD430_FLOAT_ALIGN) /* Scalar Alignment: A vector type has a scalar alignment equal to that of its component type. */
+#define GLSL_STD430_VEC4_ARR_ALIGN        	GLSL_STD430_VEC4_ALIGN /* Scalar Alignment: A vector type has a scalar alignment equal to that of its component type. */
+#define GLSL_STD430_DVEC2_ALIGN            	(2 * GLSL_STD430_DOUBLE_ALIGN)
+#define GLSL_STD430_DVEC2_ARR_ALIGN      	GLSL_STD430_DVEC2_ALIGN
+#define GLSL_STD430_DVEC3_ALIGN            	(4 * GLSL_STD430_DOUBLE_ALIGN)
+#define GLSL_STD430_DVEC3_ARR_ALIGN       	GLSL_STD430_DVEC3_ALIGN
+#define GLSL_STD430_DVEC4_ALIGN            	(4 * GLSL_STD430_DOUBLE_ALIGN) /* Scalar Alignment: A vector type has a scalar alignment equal to that of its component type. */
+#define GLSL_STD430_DVEC4_ARR_ALIGN        	GLSL_STD430_DVEC4_ALIGN /* Scalar Alignment: A vector type has a scalar alignment equal to that of its component type. */
+#define GLSL_STD430_MAT2_ALIGN             	GLSL_STD430_VEC2_ARR_ALIGN
+#define GLSL_STD430_MAT2_ARR_ALIGN			GLSL_STD430_MAT2_ALIGN
+#define GLSL_STD430_MAT3_ALIGN             	GLSL_STD430_VEC3_ARR_ALIGN
+#define GLSL_STD430_MAT3_ARR_ALIGN			GLSL_STD430_MAT3_ALIGN
+#define GLSL_STD430_MAT4_ALIGN             	GLSL_STD430_VEC4_ARR_ALIGN /* Recursively MAT2 --> array of VEC2, MAT3 --> array of VEC3, MAT4 --> array of VEC4 */
+#define GLSL_STD430_MAT4_ARR_ALIGN			GLSL_STD430_MAT4_ALIGN
+#define GLSL_STD430_DMAT2_ALIGN            	GLSL_STD430_DVEC2_ARR_ALIGN
+#define GLSL_STD430_DMAT2_ARR_ALIGN			GLSL_STD430_DMAT2_ALIGN
+#define GLSL_STD430_DMAT3_ALIGN            	GLSL_STD430_DVEC3_ARR_ALIGN
+#define GLSL_STD430_DMAT3_ARR_ALIGN			GLSL_STD430_DMAT3_ALIGN
+#define GLSL_STD430_DMAT4_ALIGN            	GLSL_STD430_DVEC4_ARR_ALIGN /* Recursively DMAT2 --> array of DVEC2, DMAT3 --> array of DVEC3, DMAT4 --> array of DVEC4 */
+#define GLSL_STD430_DMAT4_ARR_ALIGN			GLSL_STD430_DMAT4_ALIGN
 
-#define GLSL_TYPE_BLOCK_SIZE  			FORCE_ERROR("size is not defined for BLOCK")
-#define GLSL_TYPE_FLOAT_SIZE			4
-#define GLSL_TYPE_INT_SIZE 				4
-#define GLSL_TYPE_UINT_SIZE				4
-#define GLSL_TYPE_DOUBLE_SIZE 			FORCE_ERROR("double is not supported yet")
-#define GLSL_TYPE_VEC4_SIZE 			16
-#define GLSL_TYPE_IVEC4_SIZE 			16
-#define GLSL_TYPE_UVEC4_SIZE 			16
-#define GLSL_TYPE_MAT2_SIZE  			16
-#define GLSL_TYPE_IVEC3_SIZE 			12
-#define GLSL_TYPE_UVEC3_SIZE 			12
-#define GLSL_TYPE_VEC3_SIZE 			12
-#define GLSL_TYPE_IVEC2_SIZE 			8
-#define GLSL_TYPE_UVEC2_SIZE 			8
-#define GLSL_TYPE_VEC2_SIZE 			8
-#define GLSL_TYPE_MAT4_SIZE 			64
-#define GLSL_TYPE_MAT3_SIZE 			36
-#define GLSL_TYPE_SAMPLER_2D_SIZE 		FORCE_ERROR("size is not defined for Opque types")
-#define GLSL_TYPE_SAMPLER_3D_SIZE		FORCE_ERROR("size is not defined for Opque types")
-#define GLSL_TYPE_SAMPLER_CUBE_SIZE		FORCE_ERROR("size is not defined for Opque types")
+/* (std140) Extended Layout */
+#define GLSL_STD140_FLOAT_ALIGN 			GLSL_STD430_FLOAT_ALIGN
+#define GLSL_STD140_FLOAT_ARR_ALIGN 		U32_NEXT_MULTIPLE(GLSL_STD430_FLOAT_ARR_ALIGN, 16)
+#define GLSL_STD140_INT_ALIGN 				GLSL_STD430_INT_ALIGN
+#define GLSL_STD140_INT_ARR_ALIGN 			U32_NEXT_MULTIPLE(GLSL_STD430_INT_ARR_ALIGN, 16)
+#define GLSL_STD140_UINT_ALIGN 				GLSL_STD430_UINT_ALIGN
+#define GLSL_STD140_UINT_ARR_ALIGN 			U32_NEXT_MULTIPLE(GLSL_STD430_UINT_ARR_ALIGN, 16)
+#define GLSL_STD140_DOUBLE_ALIGN 			GLSL_STD430_DOUBLE_ALIGN
+#define GLSL_STD140_DOUBLE_ARR_ALIGN 		U32_NEXT_MULTIPLE(GLSL_STD430_DOUBLE_ARR_ALIGN, 16)
+#define GLSL_STD140_IVEC4_ALIGN 			GLSL_STD430_IVEC4_ALIGN
+#define GLSL_STD140_IVEC4_ARR_ALIGN 		U32_NEXT_MULTIPLE(GLSL_STD430_IVEC4_ARR_ALIGN, 16)
+#define GLSL_STD140_UVEC4_ALIGN 			GLSL_STD430_UVEC4_ALIGN
+#define GLSL_STD140_UVEC4_ARR_ALIGN 		U32_NEXT_MULTIPLE(GLSL_STD430_UVEC4_ARR_ALIGN, 16)
+#define GLSL_STD140_IVEC3_ALIGN 			GLSL_STD430_IVEC3_ALIGN
+#define GLSL_STD140_IVEC3_ARR_ALIGN 		U32_NEXT_MULTIPLE(GLSL_STD430_IVEC3_ARR_ALIGN, 16)
+#define GLSL_STD140_UVEC3_ALIGN 			GLSL_STD430_UVEC3_ALIGN
+#define GLSL_STD140_UVEC3_ARR_ALIGN 		U32_NEXT_MULTIPLE(GLSL_STD430_UVEC3_ARR_ALIGN, 16)
+#define GLSL_STD140_IVEC2_ALIGN 			GLSL_STD430_IVEC2_ALIGN
+#define GLSL_STD140_IVEC2_ARR_ALIGN 		U32_NEXT_MULTIPLE(GLSL_STD430_IVEC2_ARR_ALIGN, 16)
+#define GLSL_STD140_UVEC2_ALIGN 			GLSL_STD430_UVEC2_ALIGN
+#define GLSL_STD140_UVEC2_ARR_ALIGN 		U32_NEXT_MULTIPLE(GLSL_STD430_UVEC2_ARR_ALIGN, 16)
+#define GLSL_STD140_VEC2_ALIGN 				GLSL_STD430_VEC2_ALIGN
+#define GLSL_STD140_VEC2_ARR_ALIGN 			U32_NEXT_MULTIPLE(GLSL_STD430_VEC2_ARR_ALIGN, 16)
+#define GLSL_STD140_VEC3_ALIGN 				GLSL_STD430_VEC3_ALIGN
+#define GLSL_STD140_VEC3_ARR_ALIGN 			U32_NEXT_MULTIPLE(GLSL_STD430_VEC3_ARR_ALIGN, 16)
+#define GLSL_STD140_VEC4_ALIGN 				GLSL_STD430_VEC4_ALIGN
+#define GLSL_STD140_VEC4_ARR_ALIGN 			U32_NEXT_MULTIPLE(GLSL_STD430_VEC4_ARR_ALIGN, 16)
+#define GLSL_STD140_DVEC2_ALIGN 			GLSL_STD430_DVEC2_ALIGN
+#define GLSL_STD140_DVEC2_ARR_ALIGN 		U32_NEXT_MULTIPLE(GLSL_STD430_DVEC2_ARR_ALIGN, 16)
+#define GLSL_STD140_DVEC3_ALIGN 			GLSL_STD430_DVEC3_ALIGN
+#define GLSL_STD140_DVEC3_ARR_ALIGN 		U32_NEXT_MULTIPLE(GLSL_STD430_DVEC3_ARR_ALIGN, 16)
+#define GLSL_STD140_DVEC4_ALIGN 			GLSL_STD430_DVEC4_ALIGN
+#define GLSL_STD140_DVEC4_ARR_ALIGN 		U32_NEXT_MULTIPLE(GLSL_STD430_DVEC4_ARR_ALIGN, 16)
+#define GLSL_STD140_MAT2_ALIGN 				GLSL_STD430_MAT2_ALIGN
+#define GLSL_STD140_MAT2_ARR_ALIGN			U32_NEXT_MULTIPLE(GLSL_STD430_MAT2_ALIGN, 16)
+#define GLSL_STD140_MAT3_ALIGN 				GLSL_STD430_MAT3_ALIGN
+#define GLSL_STD140_MAT3_ARR_ALIGN			U32_NEXT_MULTIPLE(GLSL_STD430_MAT3_ALIGN, 16)
+#define GLSL_STD140_MAT4_ALIGN 				GLSL_STD430_MAT4_ALIGN
+#define GLSL_STD140_MAT4_ARR_ALIGN			U32_NEXT_MULTIPLE(GLSL_STD430_MAT4_ALIGN, 16)
+#define GLSL_STD140_DMAT2_ALIGN 			GLSL_STD430_DMAT2_ALIGN
+#define GLSL_STD140_DMAT2_ARR_ALIGN			U32_NEXT_MULTIPLE(GLSL_STD430_DMAT2_ALIGN, 16)
+#define GLSL_STD140_DMAT3_ALIGN 			GLSL_STD430_DMAT3_ALIGN
+#define GLSL_STD140_DMAT3_ARR_ALIGN			U32_NEXT_MULTIPLE(GLSL_STD430_DMAT3_ALIGN, 16)
+#define GLSL_STD140_DMAT4_ALIGN 			GLSL_STD430_DMAT4_ALIGN
+#define GLSL_STD140_DMAT4_ARR_ALIGN			U32_NEXT_MULTIPLE(GLSL_STD430_DMAT4_ALIGN, 16)
 
-typedef f32 glsl_float_t ALIGN_AS(GLSL_TYPE_FLOAT_ALIGN);
-typedef s32 glsl_int_t ALIGN_AS(GLSL_TYPE_INT_ALIGN);
-typedef u32 glsl_uint_t ALIGN_AS(GLSL_TYPE_UINT_ALIGN);
-typedef struct glsl_vec4_t { glsl_float_t x, y, z, w; } glsl_vec4_t ALIGN_AS(GLSL_TYPE_VEC4_ALIGN);
-typedef struct glsl_vec3_t { glsl_float_t x, y, z; } glsl_vec3_t ALIGN_AS(GLSL_TYPE_VEC3_ALIGN);
-typedef struct glsl_vec2_t { glsl_float_t x, y; } glsl_vec2_t ALIGN_AS(GLSL_TYPE_VEC2_ALIGN);
-typedef struct glsl_ivec4_t { glsl_int_t x, y, z, w; } glsl_ivec4_t ALIGN_AS(GLSL_TYPE_IVEC4_ALIGN);
-typedef struct glsl_ivec3_t { glsl_int_t x, y, z; } glsl_ivec3_t ALIGN_AS(GLSL_TYPE_IVEC3_ALIGN);
-typedef struct glsl_ivec2_t { glsl_int_t x, y; } glsl_ivec2_t ALIGN_AS(GLSL_TYPE_IVEC2_ALIGN);
-typedef struct glsl_uvec4_t { glsl_uint_t x, y, z, w; } glsl_uvec4_t ALIGN_AS(GLSL_TYPE_UVEC4_ALIGN);
-typedef struct glsl_uvec3_t { glsl_uint_t x, y, z; } glsl_uvec3_t ALIGN_AS(GLSL_TYPE_UVEC3_ALIGN);
-typedef struct glsl_uvec2_t { glsl_uint_t x, y; } glsl_uvec2_t ALIGN_AS(GLSL_TYPE_UVEC2_ALIGN);
-typedef union glsl_mat4_t
-{
-	struct { glsl_vec4_t r0, r1, r2, r3; };
-	struct
-	{
-		glsl_float_t m00, m01, m02, m03,
-					 m10, m11, m12, m13,
-					 m20, m21, m22, m23,
-					 m30, m31, m32, m33;
-	};
-} glsl_mat4_t ALIGN_AS(GLSL_TYPE_MAT4_ALIGN);
-typedef union glsl_mat3_t
-{
-	struct { glsl_vec3_t r0, r1, r2; };
-	struct
-	{
-		glsl_float_t m00, m01, m02,
-					 m10, m11, m12,
-					 m20, m21, m22;
-	};
-} glsl_mat3_t ALIGN_AS(GLSL_TYPE_MAT3_ALIGN);
-typedef union glsl_mat2_t
-{
-	struct { glsl_float_t r0, r1; };
-	struct { glsl_float_t m00, m01, m10, m11; };
-} glsl_mat2_t ALIGN_AS(GLSL_TYPE_MAT2_ALIGN);
-
-#define __glsl_sizeof_glsl_block_t 			GLSL_TYPE_BLOCK_SIZE
-#define __glsl_sizeof_glsl_float_t 			GLSL_TYPE_FLOAT_SIZE
-#define __glsl_sizeof_glsl_int_t 			GLSL_TYPE_INT_SIZE
-#define __glsl_sizeof_glsl_uint_t 			GLSL_TYPE_UINT_SIZE
-#define __glsl_sizeof_glsl_double_t 		GLSL_TYPE_DOUBLE_SIZE
-#define __glsl_sizeof_glsl_vec4_t 			GLSL_TYPE_VEC4_SIZE
-#define __glsl_sizeof_glsl_ivec4_t 			GLSL_TYPE_IVEC4_SIZE
-#define __glsl_sizeof_glsl_uvec4_t 			GLSL_TYPE_UVEC4_SIZE
-#define __glsl_sizeof_glsl_mat2_t 			GLSL_TYPE_MAT2_SIZE
-#define __glsl_sizeof_glsl_ivec3_t 			GLSL_TYPE_IVEC3_SIZE
-#define __glsl_sizeof_glsl_uvec3_t 			GLSL_TYPE_UVEC3_SIZE
-#define __glsl_sizeof_glsl_vec3_t 			GLSL_TYPE_VEC3_SIZE
-#define __glsl_sizeof_glsl_ivec2_t 			GLSL_TYPE_IVEC2_SIZE
-#define __glsl_sizeof_glsl_uvec2_t 			GLSL_TYPE_UVEC2_SIZE
-#define __glsl_sizeof_glsl_vec2_t 			GLSL_TYPE_VEC2_SIZE
-#define __glsl_sizeof_glsl_mat4_t 			GLSL_TYPE_MAT4_SIZE
-#define __glsl_sizeof_glsl_mat3_t 			GLSL_TYPE_MAT3_SIZE
-#define __glsl_sizeof_glsl_sampler_2d_t 	GLSL_TYPE_SAMPLER_2D_SIZE
-#define __glsl_sizeof_glsl_sampler_3d_t 	GLSL_TYPE_SAMPLER_3D_SIZE
-#define __glsl_sizeof_glsl_sampler_cube_t 	GLSL_TYPE_SAMPLER_CUBE_SIZE
-
-#define glsl_sizeof(glsl_type) __glsl_sizeof_##glsl_type
-
-#define __glsl_alignof_glsl_block_t 		GLSL_TYPE_BLOCK_ALIGN
-#define __glsl_alignof_glsl_float_t 		GLSL_TYPE_FLOAT_ALIGN
-#define __glsl_alignof_glsl_int_t 			GLSL_TYPE_INT_ALIGN
-#define __glsl_alignof_glsl_uint_t 			GLSL_TYPE_UINT_ALIGN
-#define __glsl_alignof_glsl_double_t 		GLSL_TYPE_DOUBLE_ALIGN
-#define __glsl_alignof_glsl_vec4_t 			GLSL_TYPE_VEC4_ALIGN
-#define __glsl_alignof_glsl_ivec4_t 		GLSL_TYPE_IVEC4_ALIGN
-#define __glsl_alignof_glsl_uvec4_t 		GLSL_TYPE_UVEC4_ALIGN
-#define __glsl_alignof_glsl_mat2_t 			GLSL_TYPE_MAT2_ALIGN
-#define __glsl_alignof_glsl_ivec3_t 		GLSL_TYPE_IVEC3_ALIGN
-#define __glsl_alignof_glsl_uvec3_t 		GLSL_TYPE_UVEC3_ALIGN
-#define __glsl_alignof_glsl_vec3_t 			GLSL_TYPE_VEC3_ALIGN
-#define __glsl_alignof_glsl_ivec2_t 		GLSL_TYPE_IVEC2_ALIGN
-#define __glsl_alignof_glsl_uvec2_t 		GLSL_TYPE_UVEC2_ALIGN
-#define __glsl_alignof_glsl_vec2_t 			GLSL_TYPE_VEC2_ALIGN
-#define __glsl_alignof_glsl_mat4_t 			GLSL_TYPE_MAT4_ALIGN
-#define __glsl_alignof_glsl_mat3_t 			GLSL_TYPE_MAT3_ALIGN
-#define __glsl_alignof_glsl_sampler_2d_t 	GLSL_TYPE_SAMPLER_2D_ALIGN
-#define __glsl_alignof_glsl_sampler_3d_t 	GLSL_TYPE_SAMPLER_3D_ALIGN
-#define __glsl_alignof_glsl_sampler_cube_t 	GLSL_TYPE_SAMPLER_CUBE_ALIGN
-
-#define glsl_alignof(glsl_type) __glsl_alignof_##glsl_type
