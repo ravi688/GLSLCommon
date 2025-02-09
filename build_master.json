@@ -1,0 +1,36 @@
+{
+    "project_name" : "GLSLCommon",
+    "canonical_name" : "glslcommon",
+    "description" : "Small Library for working with GLSL types",
+    "dependencies" : [ "common", "diskmanager" ],
+    "release_defines": [ "-DGLSLCOM_RELEASE" ],
+    "debug_defines": [ "-DGLSLCOM_DEBUG" ],
+    "install_header_dirs" : [ "include/glslcommon" ],
+    "include_dirs" : [ "include" ],
+    "targets" :
+    [
+        {
+            "name" : "glslcommon_static",
+            "is_static_library" : true,
+            "description" : "Static Library for GLSLCommon",
+            "build_defines" : [ "-DGLSLCOM_BUILD_STATIC_LIBRARY" ],
+            "use_defines" : [ "-DGLSLCOM_USE_STATIC_LIBRARY" ]
+        },
+        {
+            "name" : "glslcommon_shared",
+            "is_shared_library" : true,
+            "description" : "Shared Library for GLSLCommon",
+            "build_defines" : [ "-DGLSLCOM_BUILD_SHARED_LIBRARY" ],
+            "use_defines" : [ "-DGLSLCOM_USE_SHARED_LIBRARY" ]
+        },
+        {
+            "name" : "main",
+            "is_executable" : true,
+            "sources" : [ "source/main.c" ]
+        }
+    ],
+    "sources" :
+    [
+        "source/glsl_types.c"
+    ]
+}

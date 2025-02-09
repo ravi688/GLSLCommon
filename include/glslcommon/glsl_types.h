@@ -77,16 +77,16 @@ typedef struct glsl_type_layout_traits_t
 } glsl_type_layout_traits_t;
 
 /* returns alignment (in bytes) of a glsl type 'type' */
-GLSL_COM_API u32 alignof_glsl_type(glsl_type_t type, glsl_memory_layout_t layout);
-GLSL_COM_API u32 alignof_glsl_type_array(glsl_type_t type, glsl_memory_layout_t layout);
+GLSLCOM_API u32 alignof_glsl_type(glsl_type_t type, glsl_memory_layout_t layout);
+GLSLCOM_API u32 alignof_glsl_type_array(glsl_type_t type, glsl_memory_layout_t layout);
 typedef glsl_type_layout_traits_t (*glsl_type_layout_traits_callback_t)(void* user_data, u32 type_index);
-GLSL_COM_API u32 alignof_glsl_type_struct(glsl_type_layout_traits_callback_t callback, void* user_data, u32 type_traits_count, glsl_memory_layout_t layout);
+GLSLCOM_API u32 alignof_glsl_type_struct(glsl_type_layout_traits_callback_t callback, void* user_data, u32 type_traits_count, glsl_memory_layout_t layout);
 #define alignof_glsl_type_struct_array alignof_glsl_type_struct
 
 /* returns size (in bytes) of a glsl type 'type' */
-GLSL_COM_API u32 sizeof_glsl_type(glsl_type_t type, glsl_memory_layout_t layout);
+GLSLCOM_API u32 sizeof_glsl_type(glsl_type_t type, glsl_memory_layout_t layout);
 /* returns VkFormat (u32) of a glsl type 'type' */
-GLSL_COM_API u32 vkformatof_glsl_type(glsl_type_t type);
+GLSLCOM_API u32 vkformatof_glsl_type(glsl_type_t type);
 
 /* Scalary Layout */
 #define GLSL_SCALAR_FLOAT_ALIGN            	4 /* IEEE 745 double precision float has 32 bits */
