@@ -132,7 +132,7 @@ static u32 alignof_glsl_type_extended(glsl_type_t type, bool is_array)
     return 0;
 }
 
-GLSL_COM_API u32 alignof_glsl_type(glsl_type_t type, glsl_memory_layout_t layout)
+GLSLCOM_API u32 alignof_glsl_type(glsl_type_t type, glsl_memory_layout_t layout)
 {
     switch(layout)
     {
@@ -156,7 +156,7 @@ GLSL_COM_API u32 alignof_glsl_type(glsl_type_t type, glsl_memory_layout_t layout
     }
 }
 
-GLSL_COM_API u32 alignof_glsl_type_array(glsl_type_t type, glsl_memory_layout_t layout)
+GLSLCOM_API u32 alignof_glsl_type_array(glsl_type_t type, glsl_memory_layout_t layout)
 {
     switch(layout)
     {
@@ -189,7 +189,7 @@ static u32 get_align_from_type_traits(glsl_type_layout_traits_t type_traits, gls
     return alignof_glsl_type(type_traits.type, layout);
 }
 
-GLSL_COM_API u32 alignof_glsl_type_struct(glsl_type_layout_traits_callback_t callback, void* user_data, u32 type_traits_count, glsl_memory_layout_t layout)
+GLSLCOM_API u32 alignof_glsl_type_struct(glsl_type_layout_traits_callback_t callback, void* user_data, u32 type_traits_count, glsl_memory_layout_t layout)
 {
     _ASSERT(type_traits_count > 0);
 
@@ -223,7 +223,7 @@ GLSL_COM_API u32 alignof_glsl_type_struct(glsl_type_layout_traits_callback_t cal
     }
 }
 
-GLSL_COM_API u32 sizeof_glsl_type(glsl_type_t type, glsl_memory_layout_t layout)
+GLSLCOM_API u32 sizeof_glsl_type(glsl_type_t type, glsl_memory_layout_t layout)
 {
 	switch(type)
 	{
@@ -540,7 +540,7 @@ typedef enum VkFormat {
     VK_FORMAT_MAX_ENUM = 0x7FFFFFFF
 } VkFormat;
 
-GLSL_COM_API u32 vkformatof_glsl_type(glsl_type_t type)
+GLSLCOM_API u32 vkformatof_glsl_type(glsl_type_t type)
 {
 	switch(type)
 	{
