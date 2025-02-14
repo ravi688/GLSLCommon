@@ -50,43 +50,51 @@ project('GLSLCommon', 'c', 'cpp',
   ]
 )
 
+# Variables
+
+
+# Defines
+defines_bm_internal__ = [
+
+]
+
 # Release Build Defines
-release_defines = [
+release_defines_bm_internal__ = [
 '-DGLSLCOM_RELEASE'
 ] 
 
 # Debug Build Defines
-debug_defines = [
+debug_defines_bm_internal__ = [
 '-DGLSLCOM_DEBUG'
 ]
 
 # Source files (common to all targets)
-sources = files(
+sources_bm_internal__ = files(
 'source/glsl_types.c'
 )
 
 # Include directories
-inc = include_directories(
+inc_bm_internal__ = include_directories(
 'include'
 )
 
 # Library Install Directory
-lib_install_dir = get_option('libdir')/'glslcommon'
+lib_install_dir_bm_internal__ = get_option('libdir')/'glslcommon'
 
 # Dependencies
-dependencies = [
+dependencies_bm_internal__ = [
 dependency('common'),
 dependency('diskmanager')
 ]
 
 # Linker Arguments
-windows_link_args = [ 
+windows_link_args_bm_internal__ = [ 
 
 ]
-linux_link_args = [
+linux_link_args_bm_internal__ = [
 
 ]
-darwin_link_args = [
+darwin_link_args_bm_internal__ = [
 
 ]
 
@@ -97,174 +105,182 @@ darwin_link_args = [
 add_project_arguments('-m64', language : 'c')
 add_project_arguments('-m64', language : 'cpp')
 # Linker configuration
-link_args = []
-os_name = host_machine.system()
-if os_name == 'windows'
-  link_args += windows_link_args
-elif os_name == 'linux'
-  link_args += linux_link_args
-elif os_name == 'darwin'
-  link_args += darwin_link_args
+link_args_bm_internal__ = []
+os_name_bm_internal__ = host_machine.system()
+if os_name_bm_internal__ == 'windows'
+  link_args_bm_internal__ += windows_link_args_bm_internal__
+elif os_name_bm_internal__ == 'linux'
+  link_args_bm_internal__ += linux_link_args_bm_internal__
+elif os_name_bm_internal__ == 'darwin'
+  link_args_bm_internal__ += darwin_link_args_bm_internal__
 endif
-add_project_link_arguments('-m64', link_args, language : 'c')
-add_project_link_arguments('-m64', link_args, language : 'cpp')
+add_project_link_arguments('-m64', link_args_bm_internal__, language : 'c')
+add_project_link_arguments('-m64', link_args_bm_internal__, language : 'cpp')
 
 # Build type specific defines
-build_mode_defines = []
+build_mode_defines_bm_internal__ = defines_bm_internal__
 if get_option('buildtype') == 'release'
-  add_project_arguments(release_defines, language : 'c')
-  add_project_arguments(release_defines, language : 'cpp')
-  build_mode_defines += release_defines
+  add_project_arguments(release_defines_bm_internal__, language : 'c')
+  add_project_arguments(release_defines_bm_internal__, language : 'cpp')
+  build_mode_defines_bm_internal__ += release_defines_bm_internal__
 else
-  add_project_arguments(debug_defines, language : 'c')
-  add_project_arguments(debug_defines, language : 'cpp')
-  build_mode_defines += debug_defines
+  add_project_arguments(debug_defines_bm_internal__, language : 'c')
+  add_project_arguments(debug_defines_bm_internal__, language : 'cpp')
+  build_mode_defines_bm_internal__ += debug_defines_bm_internal__
 endif
 
 # pkg-config package installation
-python = find_program('python')
 # Try PKG_CONFIG_PATH first, typicallly it succeeds on MINGW64 (MSYS2)
-result = run_command(python, '-c', 'import os; print(os.environ["PKG_CONFIG_PATH"])', check : false)
-pkgconfig_install_path = ''
-if result.returncode() == 0
-  str = result.stdout()
+python_pkg_config_path_result_bm_internal__ = run_command(find_program('python'), '-c', 'import os; print(os.environ["PKG_CONFIG_PATH"])', check : false)
+pkgconfig_install_path_bm_internal__ = ''
+if python_pkg_config_path_result_bm_internal__.returncode() == 0
+  str = python_pkg_config_path_result_bm_internal__.stdout()
   # Unix
   if str.startswith('/')
-    pkgconfig_install_path = str.replace(';', ':').split(':')[0]
+    pkgconfig_install_path_bm_internal__ = str.replace(';', ':').split(':')[0]
   # Windows
   else
-    pkgconfig_install_path = str.split(';')[0]
+    pkgconfig_install_path_bm_internal__ = str.split(';')[0]
   endif
 endif
-if pkgconfig_install_path == ''
+if pkgconfig_install_path_bm_internal__ == ''
   # Otherwise use pkg-config to query its lookup directories
   message('PKG_CONFIG_PATH seems to be empty, trying another method')
-  result = run_command('pkg-config', '--variable', 'pc_path', 'pkg-config', check : false)
-  if result.returncode() == 0
-    str = result.stdout()
+  python_pkg_config_path_result_bm_internal__ = run_command('pkg-config', '--variable', 'pc_path', 'pkg-config', check : false)
+  if python_pkg_config_path_result_bm_internal__.returncode() == 0
+    str = python_pkg_config_path_result_bm_internal__.stdout()
     if str.startswith('/')
-      pkgconfig_install_path = str.replace(';', ':').split(':')[0]
+      pkgconfig_install_path_bm_internal__ = str.replace(';', ':').split(':')[0]
     else
-      pkgconfig_install_path = str.split(';')[0]
+      pkgconfig_install_path_bm_internal__ = str.split(';')[0]
     endif
   # Finally if the above attempts fail, use 'libdir' value
   else
-    pkgconfig_install_path = get_option('libdir')
+    pkgconfig_install_path_bm_internal__ = get_option('libdir')
   endif
 endif
-message('pkg config path: ' + pkgconfig_install_path)
+message('pkg config path: ' + pkgconfig_install_path_bm_internal__)
 
 #-------------------------------------------------------------------------------
 #--------------------------------BUILD TARGETS----------------------------------
 pkgmod = import('pkgconfig')
 
 # -------------- Target: glslcommon_static ------------------
-glslcommon_static_sources = [
+glslcommon_static_sources_bm_internal__ = [
 
 ]
-glslcommon_static_dependencies = [
+glslcommon_static_include_dirs_bm_internal__ = [
 
 ]
-glslcommon_static_link_args = {
+glslcommon_static_dependencies_bm_internal__ = [
+
+]
+glslcommon_static_link_args_bm_internal__ = {
 'windows' : [],
 'linux' : [],
 'darwin' : []
 }
-glslcommon_static_build_defines = [
+glslcommon_static_build_defines_bm_internal__ = [
 '-DGLSLCOM_BUILD_STATIC_LIBRARY'
 ]
-glslcommon_static_use_defines = [
+glslcommon_static_use_defines_bm_internal__ = [
 '-DGLSLCOM_USE_STATIC_LIBRARY'
 ]
 glslcommon_static = static_library('glslcommon_static',
-	glslcommon_static_sources + sources,
-	dependencies: dependencies + glslcommon_static_dependencies,
-	include_directories: inc,
+	glslcommon_static_sources_bm_internal__ + sources_bm_internal__,
+	dependencies: dependencies_bm_internal__ + glslcommon_static_dependencies_bm_internal__,
+	include_directories: [inc_bm_internal__, glslcommon_static_include_dirs_bm_internal__],
 	install: true,
-	install_dir: lib_install_dir,
-	c_args: glslcommon_static_build_defines + glslcommon_static_use_defines,
-	cpp_args: glslcommon_static_build_defines + glslcommon_static_use_defines, 
-	link_args: glslcommon_static_link_args[host_machine.system()],
+	install_dir: lib_install_dir_bm_internal__,
+	c_args: glslcommon_static_build_defines_bm_internal__,
+	cpp_args: glslcommon_static_build_defines_bm_internal__, 
+	link_args: glslcommon_static_link_args_bm_internal__[host_machine.system()],
 	gnu_symbol_visibility: 'hidden'
 )
 glslcommon_static_dep = declare_dependency(
 	link_with: glslcommon_static,
-	include_directories: inc,
-	compile_args: glslcommon_static_use_defines + build_mode_defines
+	include_directories: [inc_bm_internal__, glslcommon_static_include_dirs_bm_internal__],
+	compile_args: glslcommon_static_use_defines_bm_internal__ + build_mode_defines_bm_internal__
 )
 pkgmod.generate(glslcommon_static,
 	name: 'GLSLCommon',
 	description: 'Static Library for GLSLCommon',
 	filebase: 'glslcommon_static',
-	install_dir: pkgconfig_install_path,
-	extra_cflags: glslcommon_static_use_defines + build_mode_defines
+	install_dir: pkgconfig_install_path_bm_internal__,
+	extra_cflags: glslcommon_static_use_defines_bm_internal__ + build_mode_defines_bm_internal__
 )
 
 # -------------- Target: glslcommon_shared ------------------
-glslcommon_shared_sources = [
+glslcommon_shared_sources_bm_internal__ = [
 
 ]
-glslcommon_shared_dependencies = [
+glslcommon_shared_include_dirs_bm_internal__ = [
 
 ]
-glslcommon_shared_link_args = {
+glslcommon_shared_dependencies_bm_internal__ = [
+
+]
+glslcommon_shared_link_args_bm_internal__ = {
 'windows' : [],
 'linux' : [],
 'darwin' : []
 }
-glslcommon_shared_build_defines = [
+glslcommon_shared_build_defines_bm_internal__ = [
 '-DGLSLCOM_BUILD_SHARED_LIBRARY'
 ]
-glslcommon_shared_use_defines = [
+glslcommon_shared_use_defines_bm_internal__ = [
 '-DGLSLCOM_USE_SHARED_LIBRARY'
 ]
 glslcommon_shared = shared_library('glslcommon_shared',
-	glslcommon_shared_sources + sources,
-	dependencies: dependencies + glslcommon_shared_dependencies,
-	include_directories: inc,
+	glslcommon_shared_sources_bm_internal__ + sources_bm_internal__,
+	dependencies: dependencies_bm_internal__ + glslcommon_shared_dependencies_bm_internal__,
+	include_directories: [inc_bm_internal__, glslcommon_shared_include_dirs_bm_internal__],
 	install: true,
-	install_dir: lib_install_dir,
-	c_args: glslcommon_shared_build_defines + glslcommon_shared_use_defines,
-	cpp_args: glslcommon_shared_build_defines + glslcommon_shared_use_defines, 
-	link_args: glslcommon_shared_link_args[host_machine.system()],
+	install_dir: lib_install_dir_bm_internal__,
+	c_args: glslcommon_shared_build_defines_bm_internal__,
+	cpp_args: glslcommon_shared_build_defines_bm_internal__, 
+	link_args: glslcommon_shared_link_args_bm_internal__[host_machine.system()],
 	gnu_symbol_visibility: 'hidden'
 )
 glslcommon_shared_dep = declare_dependency(
 	link_with: glslcommon_shared,
-	include_directories: inc,
-	compile_args: glslcommon_shared_use_defines + build_mode_defines
+	include_directories: [inc_bm_internal__, glslcommon_shared_include_dirs_bm_internal__],
+	compile_args: glslcommon_shared_use_defines_bm_internal__ + build_mode_defines_bm_internal__
 )
 pkgmod.generate(glslcommon_shared,
 	name: 'GLSLCommon',
 	description: 'Shared Library for GLSLCommon',
 	filebase: 'glslcommon_shared',
-	install_dir: pkgconfig_install_path,
-	extra_cflags: glslcommon_shared_use_defines + build_mode_defines
+	install_dir: pkgconfig_install_path_bm_internal__,
+	extra_cflags: glslcommon_shared_use_defines_bm_internal__ + build_mode_defines_bm_internal__
 )
 
 # -------------- Target: main ------------------
-main_sources = [
+main_sources_bm_internal__ = [
 'source/main.c'
 ]
-main_dependencies = [
+main_include_dirs_bm_internal__ = [
 
 ]
-main_link_args = {
+main_dependencies_bm_internal__ = [
+
+]
+main_link_args_bm_internal__ = {
 'windows' : [],
 'linux' : [],
 'darwin' : []
 }
-main_defines = [
+main_defines_bm_internal__ = [
 
 ]
 main = executable('main',
-	main_sources + sources,
-	dependencies: dependencies + main_dependencies,
-	include_directories: inc,
+	main_sources_bm_internal__ + sources_bm_internal__,
+	dependencies: dependencies_bm_internal__ + main_dependencies_bm_internal__,
+	include_directories: [inc_bm_internal__, main_include_dirs_bm_internal__],
 	install: false,
-	c_args: main_defines,
-	cpp_args: main_defines, 
-	link_args: main_link_args[host_machine.system()],
+	c_args: main_defines_bm_internal__,
+	cpp_args: main_defines_bm_internal__, 
+	link_args: main_link_args_bm_internal__[host_machine.system()],
 	gnu_symbol_visibility: 'hidden'
 )
 
